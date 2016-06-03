@@ -18,6 +18,8 @@ void set_pixel(int x, int y)
 
 	min = MAX_DISTANCE;
 
+	printf("%lu\n", sizeof(ear_bits));
+
 	for(iy = 0; iy < ear_height; iy++){
 		dy = iy - y;
 		if(dy > MAX_DISTANCE || dy < -MAX_DISTANCE){
@@ -58,7 +60,7 @@ int main(int argc, char** argv)
 	}
 
 	file = fopen(OUTPUT_NAME, "wb");
-	fwrite(output, 1, OUTPUT_WIDTH * OUTPUT_HEIGHT, file);
+	fwrite(output, sizeof(char), 2 + OUTPUT_WIDTH * OUTPUT_HEIGHT, file);
 	fclose(file);
 
 	printf("Written to %s\n", OUTPUT_NAME);
