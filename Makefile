@@ -5,7 +5,7 @@ RM=rm -rf
 CFLAGS=-g -Wall -pedantic -O3 -DUSE_GLEW
 LDLIBS=-lccore -lGL -lGLU -lGLEW -lm -lX11 -lXrandr -lpthread
 
-GSRCS=src/dfield_generator.c
+GSRCS=src/dfield_generator.c src/lodepng.c
 GOBJS=$(subst .c,.o,$(GSRCS))
 
 RSRCS=src/dfield_renderer.c

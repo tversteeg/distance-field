@@ -32,6 +32,7 @@ static const char *vertex_shader_source =
 "	vec2 outp = position.xy * scale;\n"
 "	gl_Position = vec4(outp, position.z, 1.0);\n"
 "	texture_coord = ((position.xy / scale) + vec2(1.0)) / vec2(2.0);\n"
+"	texture_coord.y = 1.0 - texture_coord.y;\n"
 "}";
 
 static const char *fragment_shader_source =
@@ -41,7 +42,7 @@ static const char *fragment_shader_source =
 "in vec2 texture_coord;\n"
 "void main () {\n"
 "	float color = texture(texture_unit, texture_coord).r;\n"
-"	if(color > 0.5){\n"
+"	if(color > 0.1){\n"
 "		frag_color = vec4(1.0);\n"
 "	}else{\n"
 "		frag_color = vec4(0.0, 0.0, 0.0, 1.0);\n"
