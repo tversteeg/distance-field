@@ -4,20 +4,22 @@
 
 #include "lodepng.h"
 
-#define INPUT_NAME "ear.png"
+#define INPUT_NAME "vis.png"
 
 #define OUTPUT_NAME "ear.dfield"
 #define OUTPUT_WIDTH 64
 #define OUTPUT_HEIGHT 64
 
 #define MAX_DISTANCE 512
-#define PNG_TRESHOLD 128
-
-#define HALF_MAX_DISTANCE (MAX_DISTANCE / 2)
+#define PNG_TRESHOLD 127
 
 unsigned char output[2 + OUTPUT_WIDTH * OUTPUT_HEIGHT];
+double buffer[OUTPUT_WIDTH * OUTPUT_HEIGHT];
+
 unsigned char *input;
 unsigned input_width, input_height;
+double max_distance = -MAX_DISTANCE;
+double min_distance = MAX_DISTANCE;
 
 void set_pixel(int x, int y)
 {
@@ -28,7 +30,7 @@ void set_pixel(int x, int y)
 	cx = (x * input_width) / OUTPUT_WIDTH;
 	cy = (y * input_height) / OUTPUT_HEIGHT;
 
-	min = HALF_MAX_DISTANCE;
+	min = MAX_DISTANCE;
 
 	minx = cx - MAX_DISTANCE;
 	if(minx < 0){
@@ -47,8 +49,7 @@ void set_pixel(int x, int y)
 		maxy = input_height;
 	}
 	
-	source_is_inside = input[(cx + cy) << 2] > PNG_TRESHOLD;
-
+	source_is_inside = input[(cx + cy * input_width) << 2] > PNG_TRESHOLD;
 	if(source_is_inside){
 		for(iy = miny; iy < maxy; iy++){
 			dy = iy - cy;	
@@ -67,7 +68,12 @@ void set_pixel(int x, int y)
 			}
 		}
 
-		min = HALF_MAX_DISTANCE + (min / MAX_DISTANCE) * 255;
+		if(min > max_distance){
+			max_distance = min;
+		}
+
+		buffer[x + y * OUTPUT_WIDTH] = min;
+		printf(" ");
 	}else{
 		for(iy = miny; iy < maxy; iy++){
 			dy = iy - cy;	
@@ -86,16 +92,13 @@ void set_pixel(int x, int y)
 			}
 		}
 
-		min = (min / MAX_DISTANCE) * 255;
-	}
+		if(-min < min_distance){
+			min_distance = -min;
+		}
 
-	if(min < 127){
+		buffer[x + y * OUTPUT_WIDTH] = -min;
 		printf(".");
-	}else{
-		printf(" ");
 	}
-
-	output[2 + x + y * OUTPUT_WIDTH] = (unsigned char)min;
 }
 
 int main(int argc, char** argv)
@@ -103,6 +106,8 @@ int main(int argc, char** argv)
 	unsigned char *debug_png;
 	FILE *file;
 	int i, pixels, ox, oy;
+	double raw_pixel;
+	size_t png_i;
 	unsigned error;
 	char pixel;
 
@@ -124,14 +129,22 @@ int main(int argc, char** argv)
 		printf("\n");
 	}
 
-	pixels = OUTPUT_WIDTH * OUTPUT_HEIGHT * 4;
-	debug_png = (unsigned char*)malloc(pixels);
-	for(i = 0; i < pixels; i += 4){
-		pixel = 128 + output[(i >> 2) + 2];
-		debug_png[i + 0] = pixel;
-		debug_png[i + 1] = pixel;
-		debug_png[i + 2] = pixel;
-		debug_png[i + 3] = 255;
+	printf("%f %f\n", max_distance, min_distance);
+
+	pixels = OUTPUT_WIDTH * OUTPUT_HEIGHT;
+	debug_png = (unsigned char*)malloc(pixels * 4);
+	for(i = 0; i < pixels; i++){
+		raw_pixel = buffer[i];	
+		raw_pixel -= min_distance;
+		pixel = 255 - (raw_pixel / (max_distance - min_distance)) * 255;
+
+		output[i + 2] = pixel;
+
+		png_i = i << 2;
+		debug_png[png_i + 0] = pixel;
+		debug_png[png_i + 1] = pixel;
+		debug_png[png_i + 2] = pixel;
+		debug_png[png_i + 3] = 255;
 	}
 	error = lodepng_encode32_file(OUTPUT_NAME ".png", debug_png, OUTPUT_WIDTH, OUTPUT_HEIGHT);
 	if(error){
