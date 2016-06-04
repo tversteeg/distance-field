@@ -42,7 +42,7 @@ static const char *fragment_shader_source =
 "in vec2 texture_coord;\n"
 "void main () {\n"
 "	float alpha_mask = texture(texture_unit, texture_coord).r;\n"
-"	alpha_mask = smoothstep(0.05, 0.04, alpha_mask);\n"
+"	alpha_mask = smoothstep(0.04, 0.03, alpha_mask);\n"
 "	frag_color = vec4(0.0, 0.0, 0.0, alpha_mask);\n"
 "}";
 

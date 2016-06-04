@@ -7,11 +7,13 @@
 #define INPUT_NAME "ear.png"
 
 #define OUTPUT_NAME "ear.dfield"
-#define OUTPUT_WIDTH 128
-#define OUTPUT_HEIGHT 128
+#define OUTPUT_WIDTH 64
+#define OUTPUT_HEIGHT 64
 
 #define MAX_DISTANCE 512
 #define PNG_TRESHOLD 128
+
+#define HALF_MAX_DISTANCE (MAX_DISTANCE / 2)
 
 unsigned char output[2 + OUTPUT_WIDTH * OUTPUT_HEIGHT];
 unsigned char *input;
@@ -23,10 +25,10 @@ void set_pixel(int x, int y)
 	int minx, miny, maxx, maxy;
 	double min, distance;
 
-	min = MAX_DISTANCE;
-
 	cx = (x * input_width) / OUTPUT_WIDTH;
 	cy = (y * input_height) / OUTPUT_HEIGHT;
+
+	min = HALF_MAX_DISTANCE;
 
 	minx = cx - MAX_DISTANCE;
 	if(minx < 0){
@@ -47,24 +49,46 @@ void set_pixel(int x, int y)
 	
 	source_is_inside = input[(cx + cy) << 2] > PNG_TRESHOLD;
 
-	for(iy = miny; iy < maxy; iy++){
-		dy = iy - cy;	
-		dy *= dy;
-		im = iy * input_width;
-		for(ix = minx; ix < maxx; ix++){
-			target_is_inside = input[(ix + im) << 2] > PNG_TRESHOLD;
-			if((source_is_inside && target_is_inside) || (!source_is_inside && !target_is_inside)){
-				continue;
-			}
-			dx = ix - cx;
-			distance = sqrt(dx * dx + dy);
-			if(distance < min){
-				min = distance;
+	if(source_is_inside){
+		for(iy = miny; iy < maxy; iy++){
+			dy = iy - cy;	
+			dy *= dy;
+			im = iy * input_width;
+			for(ix = minx; ix < maxx; ix++){
+				target_is_inside = input[(ix + im) << 2] > PNG_TRESHOLD;
+				if(target_is_inside){
+					continue;
+				}
+				dx = ix - cx;
+				distance = sqrt(dx * dx + dy);
+				if(distance < min){
+					min = distance;
+				}
 			}
 		}
+
+		min = HALF_MAX_DISTANCE + (min / MAX_DISTANCE) * 255;
+	}else{
+		for(iy = miny; iy < maxy; iy++){
+			dy = iy - cy;	
+			dy *= dy;
+			im = iy * input_width;
+			for(ix = minx; ix < maxx; ix++){
+				target_is_inside = input[(ix + im) << 2] > PNG_TRESHOLD;
+				if(!target_is_inside){
+					continue;
+				}
+				dx = ix - cx;
+				distance = sqrt(dx * dx + dy);
+				if(distance < min){
+					min = distance;
+				}
+			}
+		}
+
+		min = (min / MAX_DISTANCE) * 255;
 	}
 
-	min = (min / MAX_DISTANCE) * 255;
 	if(min < 127){
 		printf(".");
 	}else{
