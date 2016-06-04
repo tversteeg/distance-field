@@ -7,10 +7,11 @@
 #define INPUT_NAME "ear.png"
 
 #define OUTPUT_NAME "ear.dfield"
-#define OUTPUT_WIDTH 64
-#define OUTPUT_HEIGHT 64
+#define OUTPUT_WIDTH 128
+#define OUTPUT_HEIGHT 128
 
-#define MAX_DISTANCE 200
+#define MAX_DISTANCE 512
+#define PNG_TRESHOLD 128
 
 unsigned char output[2 + OUTPUT_WIDTH * OUTPUT_HEIGHT];
 unsigned char *input;
@@ -18,7 +19,8 @@ unsigned input_width, input_height;
 
 void set_pixel(int x, int y)
 {
-	int cx, cy, ix, iy, dx, dy, im;
+	int source_is_inside, target_is_inside, cx, cy, ix, iy, dx, dy, im;
+	int minx, miny, maxx, maxy;
 	double min, distance;
 
 	min = MAX_DISTANCE;
@@ -26,27 +28,35 @@ void set_pixel(int x, int y)
 	cx = (x * input_width) / OUTPUT_WIDTH;
 	cy = (y * input_height) / OUTPUT_HEIGHT;
 
-	for(iy = 0; iy < (int)input_height; iy++){
-		dy = iy - cy;
-		if(dy > MAX_DISTANCE){
-			break;
-		}else if(dy < -MAX_DISTANCE){
-			continue;
-		}
+	minx = cx - MAX_DISTANCE;
+	if(minx < 0){
+		minx = 0;
+	}
+	miny = cy - MAX_DISTANCE;
+	if(miny < 0){
+		miny = 0;
+	}
+	maxx = cx + MAX_DISTANCE;
+	if(maxx > (int)input_width){
+		maxx = input_width;
+	}
+	maxy = cy + MAX_DISTANCE;
+	if(maxy > (int)input_height){
+		maxy = input_height;
+	}
+	
+	source_is_inside = input[(cx + cy) << 2] > PNG_TRESHOLD;
 
+	for(iy = miny; iy < maxy; iy++){
+		dy = iy - cy;	
 		dy *= dy;
 		im = iy * input_width;
-		for(ix = 0; ix < (int)input_width; ix++){
-			if(input[(ix + im) << 2] > 10){
+		for(ix = minx; ix < maxx; ix++){
+			target_is_inside = input[(ix + im) << 2] > PNG_TRESHOLD;
+			if((source_is_inside && target_is_inside) || (!source_is_inside && !target_is_inside)){
 				continue;
 			}
 			dx = ix - cx;
-			if(dx > MAX_DISTANCE){
-				break;
-			}else if(dx < -MAX_DISTANCE){
-				continue;
-			}
-
 			distance = sqrt(dx * dx + dy);
 			if(distance < min){
 				min = distance;
@@ -55,7 +65,7 @@ void set_pixel(int x, int y)
 	}
 
 	min = (min / MAX_DISTANCE) * 255;
-	if(min < 64){
+	if(min < 127){
 		printf(".");
 	}else{
 		printf(" ");
@@ -82,6 +92,7 @@ int main(int argc, char** argv)
 	}
 
 	/* Ugly bruteforce */
+#pragma omp for
 	for(oy = 0; oy < OUTPUT_HEIGHT; oy++){
 		for(ox = 0; ox < OUTPUT_WIDTH; ox++){
 			set_pixel(ox, oy);

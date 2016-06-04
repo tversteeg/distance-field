@@ -31,7 +31,7 @@ static const char *vertex_shader_source =
 "void main () {\n"
 "	vec2 outp = position.xy * scale;\n"
 "	gl_Position = vec4(outp, position.z, 1.0);\n"
-"	texture_coord = ((position.xy / scale) + vec2(1.0)) / vec2(2.0);\n"
+"	texture_coord = ((position.xy) + vec2(1.0)) / vec2(2.0);\n"
 "	texture_coord.y = 1.0 - texture_coord.y;\n"
 "}";
 
@@ -41,15 +41,12 @@ static const char *fragment_shader_source =
 "out vec4 frag_color;\n"
 "in vec2 texture_coord;\n"
 "void main () {\n"
-"	float color = texture(texture_unit, texture_coord).r;\n"
-"	if(color > 0.1){\n"
-"		frag_color = vec4(1.0);\n"
-"	}else{\n"
-"		frag_color = vec4(0.0, 0.0, 0.0, 1.0);\n"
-"	}\n"
+"	float alpha_mask = texture(texture_unit, texture_coord).r;\n"
+"	alpha_mask = smoothstep(0.05, 0.04, alpha_mask);\n"
+"	frag_color = vec4(0.0, 0.0, 0.0, alpha_mask);\n"
 "}";
 
-char texture_width, texture_height;
+unsigned char texture_width, texture_height;
 char *texture_raw;
 
 void read_texture(void)
@@ -66,8 +63,8 @@ void read_texture(void)
   bytes = ftell(file);
   rewind(file);
 
-	fread(&texture_width, sizeof(char), 1, file);
-	fread(&texture_height, sizeof(char), 1, file);
+	fread(&texture_width, sizeof(unsigned char), 1, file);
+	fread(&texture_height, sizeof(unsigned char), 1, file);
 
 	if(bytes != (unsigned long)(texture_width * texture_height) + 2){
 		cc_set_error("File size not correct");
@@ -173,13 +170,16 @@ int main(int argc, char** argv)
 		cc_set_error("Could not get OpenGL uniform location");
 	}
 
+	glEnable (GL_BLEND);
+	glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
 	while(cc_poll_window()){
 		event = cc_pop_event();
 		if(event.type == CC_EVENT_DRAW){
 			glViewport(0, 0, cc_get_window_width(), cc_get_window_height());
 
 			glClear(GL_COLOR_BUFFER_BIT);
-			glClearColor(0.0, 0.0, 0.0, 1.0);
+			glClearColor(1.0, 1.0, 1.0, 1.0);
 
 			glUseProgram(program);
 
