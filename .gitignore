@@ -30,3 +30,10 @@
 
 # Debug files
 *.dSYM/
+
+/target/
+**/*.rs.bk
+
+/target/
+**/*.rs.bk
+Cargo.lock
