@@ -9,3 +9,6 @@ image = "0.18"
 [[example]]
 name = "generator"
 path = "examples/generator.rs"
+
+[dev-dependencies]
+docopt = "0.8"

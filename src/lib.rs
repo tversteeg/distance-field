@@ -18,11 +18,3 @@ pub fn distance_field<I: GenericImage + 'static>(image: &mut I, width: u32, heig
 
     out
 }
-
-#[cfg(test)]
-mod tests {
-    #[test]
-    fn it_works() {
-        assert_eq!(2 + 2, 4);
-    }
-}
