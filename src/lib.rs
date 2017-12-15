@@ -1,19 +1,20 @@
+ #![crate_name = "distance_field"]
+
 extern crate image;
 
-use image::{GenericImage, ImageBuffer, Pixel};
+use image::*;
 
-pub fn distance_field<I: GenericImage + 'static>(image: &mut I, width: u32, height: u32)
--> ImageBuffer<I::Pixel, Vec<<I::Pixel as Pixel>::Subpixel>> {
-    let mut out = ImageBuffer::new(width, height);
+pub fn distance_field<I: GenericImage + 'static>(image: &I, width: u32, height: u32)
+-> ImageBuffer<Luma<u8>, Vec<u8>> {
+    let mut out: ImageBuffer<Luma<u8>, Vec<u8>> = ImageBuffer::new(width, height);
 
     let (orig_width, orig_height) = image.dimensions();
 
-    for y in 0 .. orig_height {
-        for x in 0 .. orig_height {
-            let p = image.get_pixel(x, y);
+    for (x, y, pixel) in out.enumerate_pixels_mut() {
+        let p: Luma<u8> = image.get_pixel(x, y).to_luma();
 
-            out.put_pixel(x, y, p);
-        }
+        let i = p.data[0];
+        *pixel = Luma([i as u8]);
     }
 
     out
