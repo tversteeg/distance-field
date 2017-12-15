@@ -1,7 +1,12 @@
 [package]
 name = "distance-field"
 version = "0.1.0"
+description = "Generate distance fields from images for game-dev"
+readme = "README.md"
+keywords = ["image", "distance-field", "SDF", "gamedev"]
 authors = ["Thomas Versteeg <thomasversteeg@gmx.com>"]
+repository = "https://github.com/tversteeg/distance-field.git"
+homepage = "https://github.com/tversteeg/distance-field"
 
 [dependencies]
 image = "0.18"
