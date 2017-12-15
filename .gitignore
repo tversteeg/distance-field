@@ -37,3 +37,5 @@
 /target/
 **/*.rs.bk
 Cargo.lock
+
+**.png
