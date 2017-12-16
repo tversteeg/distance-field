@@ -4,18 +4,24 @@ extern crate image;
 
 use image::*;
 
-pub fn distance_field<I: GenericImage + 'static>(image: &I, width: u32, height: u32)
--> ImageBuffer<Luma<u8>, Vec<u8>> {
-    let mut out: ImageBuffer<Luma<u8>, Vec<u8>> = ImageBuffer::new(width, height);
+pub trait DistanceFieldExt {
+    fn distance_field(&self, width: u32, height: u32) -> ImageBuffer<Luma<u8>, Vec<u8>>;
+}
 
-    let (orig_width, orig_height) = image.dimensions();
+impl DistanceFieldExt for DynamicImage {
+    fn distance_field(&self, width: u32, height: u32)
+        -> ImageBuffer<Luma<u8>, Vec<u8>> {
+        let mut out: ImageBuffer<Luma<u8>, Vec<u8>> = ImageBuffer::new(width, height);
 
-    for (x, y, pixel) in out.enumerate_pixels_mut() {
-        let p: Luma<u8> = image.get_pixel(x, y).to_luma();
+        let (orig_width, orig_height) = self.dimensions();
 
-        let i = p.data[0];
-        *pixel = Luma([i as u8]);
+        for (x, y, pixel) in out.enumerate_pixels_mut() {
+            let p = self.get_pixel(x, y);
+
+            let i = p.data[0];
+            *pixel = Luma([i as u8]);
+        }
+
+        out
     }
-
-    out
 }

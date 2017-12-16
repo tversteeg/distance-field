@@ -6,7 +6,7 @@ use std::fs::File;
 
 use docopt::Docopt;
 use image::GenericImage;
-use distance_field::distance_field;
+use distance_field::DistanceFieldExt;
 
 const USAGE: &'static str = "
 Usage:
@@ -28,7 +28,7 @@ fn main() {
 
     println!("Converting image to distance field image...");
     let (width, height) = (args.get_count("<width>"), args.get_count("<height>"));
-    let outbuf = distance_field(&img, width as u32, height as u32);
+    let outbuf = img.grayscale().distance_field(width as u32, height as u32);
 
     println!("Saving distance field image to {:?}", args.get_str("<dest>"));
     let ref mut fout = File::create(args.get_str("<dest>")).unwrap();
