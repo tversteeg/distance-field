@@ -1,6 +1,6 @@
 [package]
 name = "distance-field"
-version = "0.1.0"
+version = "0.1.1"
 description = "Generate distance fields from images for game-dev"
 readme = "README.md"
 license = "GPL-3.0"

@@ -26,9 +26,10 @@ fn main() {
 
     println!("Loaded image with size {:?}", img.dimensions());
 
-    println!("Converting image to distance field image...");
-    let (width, height) = (args.get_count("<width>"), args.get_count("<height>"));
-    let outbuf = img.grayscale().distance_field(width as u32, height as u32);
+    let width = args.get_str("<width>").parse::<u32>().unwrap();
+    let height = args.get_str("<height>").parse::<u32>().unwrap();
+    println!("Converting image to distance field image with size ({:?}, {:?})...", width, height);
+    let outbuf = img.grayscale().distance_field(width, height);
 
     println!("Saving distance field image to {:?}", args.get_str("<dest>"));
     let ref mut fout = File::create(args.get_str("<dest>")).unwrap();
