@@ -29,7 +29,11 @@ fn main() {
     let width = args.get_str("<width>").parse::<u32>().unwrap();
     let height = args.get_str("<height>").parse::<u32>().unwrap();
     println!("Converting image to distance field image with size ({:?}, {:?})...", width, height);
-    let outbuf = img.grayscale().distance_field(width, height);
+
+    let outbuf = img.grayscale().distance_field(distance_field::Options {
+        max_distance: 256,
+        ..Default::default()
+    });
 
     println!("Saving distance field image to {:?}", args.get_str("<dest>"));
     let ref mut fout = File::create(args.get_str("<dest>")).unwrap();
