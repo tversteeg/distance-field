@@ -1,9 +1,11 @@
  #![crate_name = "distance_field"]
 
 extern crate image;
+extern crate spiral;
 
 use image::*;
 use std::cmp;
+use spiral::ChebyshevIterator;
 
 pub struct Options {
     pub size: (u32, u32),
@@ -50,25 +52,21 @@ fn get_nearest_pixel_distance(input: &DynamicImage, out_x: u32, out_y: u32, opti
 
     let max_distance_squared = options.max_distance * options.max_distance;
 
-    let mut closest_distance = max_distance_squared;
-    for y in i_y .. i_height {
-        let mut dist_y = center.1 - i_y;
-        dist_y *= dist_y;
-
-        for x in i_x .. i_width {
-            let p = input.get_pixel(x, y).to_luma().data[0];
-            if p < options.image_treshold {
-                continue;
-            }
-
-            let mut dist_x = center.0 - i_x;
-            dist_x *= dist_x;
-
-            let distance = dist_x + dist_y;
-            if distance < closest_distance {
-                closest_distance = distance;
-            }
+    let mut closest_distance = max_distance_squared as i32;
+    for (x, y) in ChebyshevIterator::new(i_x as i32, i_y as i32, options.max_distance as u16) {
+        if i_x >= i_width || i_y >= i_height {
+            continue;
         }
+
+        let p = input.get_pixel(x as u32, y as u32).to_luma().data[0];
+        if p < options.image_treshold {
+            continue;
+        }
+
+        let dist = (center.0 as i32 - x, center.1 as i32 - x);
+        closest_distance = dist.0 * dist.0 + dist.1 * dist.1;
+
+        break;
     }
 
     let distance_fraction = closest_distance as f32 / max_distance_squared as f32;

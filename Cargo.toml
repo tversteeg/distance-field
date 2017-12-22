@@ -13,6 +13,7 @@ homepage = "https://github.com/tversteeg/distance-field"
 travis-ci = {repository = "tversteeg/distance-field"}
 
 [dependencies]
+spiral = "0.1"
 image = "0.18"
 
 [[example]]
