@@ -4,12 +4,11 @@ extern crate image;
 extern crate spiral;
 
 use image::*;
-use std::cmp;
-use spiral::ChebyshevIterator;
+use spiral::ManhattanIterator;
 
 pub struct Options {
     pub size: (u32, u32),
-    pub max_distance: u32,
+    pub max_distance: u16,
     pub image_treshold: u8,
 }
 
@@ -35,26 +34,14 @@ impl DistanceFieldExt for DynamicImage {
     }
 }
 
-fn get_image_window(pos: (u32, u32), max_distance: i32, size: (u32, u32)) -> (u32, u32, u32, u32) {
-    let minx = cmp::max(pos.0 as i32 - max_distance, 0) as u32;
-    let miny = cmp::max(pos.1 as i32 - max_distance, 0) as u32;
-    let maxx = cmp::min(pos.0 as i32 + max_distance, size.0 as i32) as u32;
-    let maxy = cmp::min(pos.1 as i32 + max_distance, size.1 as i32) as u32;
-
-    (minx, miny, maxx, maxy)
-}
-
 fn get_nearest_pixel_distance(input: &DynamicImage, out_x: u32, out_y: u32, options: &Options) -> u8 {
     let orig_size = input.dimensions();
 
     let center = ((out_x * orig_size.0) / options.size.0, (out_y * orig_size.1) / options.size.1);
-    let (i_x, i_y, i_width, i_height) = get_image_window(center, options.max_distance as i32, orig_size);
 
-    let max_distance_squared = options.max_distance * options.max_distance;
-
-    let mut closest_distance = max_distance_squared as i32;
-    for (x, y) in ChebyshevIterator::new(i_x as i32, i_y as i32, options.max_distance as u16) {
-        if i_x >= i_width || i_y >= i_height {
+    let mut closest_distance = options.max_distance as f32;
+    for (x, y) in ManhattanIterator::new(center.0 as i32, center.1 as i32, options.max_distance as u16) {
+        if x < 0 || y < 0 || x >= orig_size.0 as i32 || y >= orig_size.1 as i32 {
             continue;
         }
 
@@ -63,13 +50,14 @@ fn get_nearest_pixel_distance(input: &DynamicImage, out_x: u32, out_y: u32, opti
             continue;
         }
 
-        let dist = (center.0 as i32 - x, center.1 as i32 - x);
-        closest_distance = dist.0 * dist.0 + dist.1 * dist.1;
+        let dx = (center.0 as i32 - x).abs();
+        let dy = (center.1 as i32 - y).abs();
+        closest_distance = ((dx * dx + dy * dy) as f32).sqrt();
 
         break;
     }
 
-    let distance_fraction = closest_distance as f32 / max_distance_squared as f32;
+    let distance_fraction = 1.0 - closest_distance / options.max_distance as f32;
 
     (distance_fraction * u8::max_value() as f32) as u8
 }
