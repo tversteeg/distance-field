@@ -1,13 +1,17 @@
 [package]
 name = "distance-field"
-version = "0.1.2"
-description = "Generate distance fields from images for game-dev"
-readme = "README.md"
-license = "GPL-3.0"
-keywords = ["image", "SDF", "gamedev"]
+version = "0.1.3"
 authors = ["Thomas Versteeg <thomasversteeg@gmx.com>"]
-repository = "https://github.com/tversteeg/distance-field.git"
+license = "GPL-3.0"
 homepage = "https://github.com/tversteeg/distance-field"
+
+readme = "README.md"
+description = "Generate distance fields from images for pseudo-vector rendering"
+documentation = "https://docs.rs/distance-field"
+
+repository = "https://github.com/tversteeg/distance-field.git"
+keywords = ["image", "SDF", "gamedev", "vector"]
+categories = ["games", "rendering", "game-engines", "multimedia"]
 
 [badges]
 travis-ci = {repository = "tversteeg/distance-field"}
