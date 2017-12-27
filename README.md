@@ -26,10 +26,4 @@ Then we apply a treshold function:
 
 ![Treshold](img/treshold.png?raw=true)
 
-You can see that we have something which looks very similar to the original input image and that just from a 64x64 image! But it's still very pixelated and doesn't look like a vector image. This can be fixed by not doing a hard treshold but allowing some shades of gray. In GIMP we can do this by adjusting the levels:
-
-![Adjust levels](img/adjust-levels.png?raw=true)
-
-This gives us the following result:
-
-![Result](img/aa.png?raw=true)
+You can see that we have something which looks very similar to the original input image and that just from a 64x64 image! But it's still very pixelated and doesn't look like a vector image. This can be fixed by not doing a hard treshold but allowing some shades of gray.
