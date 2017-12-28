@@ -4,28 +4,47 @@ extern crate image;
 extern crate spiral;
 
 use image::*;
-use spiral::ManhattanIterator;
+use spiral::ChebyshevIterator;
 
+/// The options passed as the argument to the `distance_field` method.
 pub struct Options {
+    /// The dimensions of the output image (width, height). The default value is: (64,64).
     pub size: (u32, u32),
+
+    /// The maximum distance for the projected point of the output image on the input image to
+    /// search for the nearest point. The defaul value is: 512.
     pub max_distance: u16,
+
+    /// The image value at which to apply the treshold. In a black-white vector image 127 is
+    /// probably the best value. The default value is: 127.
     pub image_treshold: u8,
 }
 
+/// Returns:
+/// ```Options {
+///     size: (64, 64),
+///     max_distance: 512,
+///     image_treshold: 127
+/// }```
 impl Default for Options {
     fn default() -> Self {
         Options {
             size: (64, 64),
             max_distance: 512,
-            image_treshold: 128
+            image_treshold: 127
         }
     }
 }
 
+/// A trait adding the `distance_field` function to image types.
 pub trait DistanceFieldExt {
+    /// Generates a grayscale output image with the dimensions as specified in the `Options`
+    /// struct.
     fn distance_field(&self, options: Options) -> ImageBuffer<Luma<u8>, Vec<u8>>;
 }
 
+/// A implementation of the `distance_field` function for the `DynamicImage` type. To call this
+/// from a normal RGB image use `image.grayscale().distance_field(options)`.
 impl DistanceFieldExt for DynamicImage {
     fn distance_field(&self, options: Options) -> ImageBuffer<Luma<u8>, Vec<u8>> {
         ImageBuffer::from_fn(options.size.0, options.size.1, |x, y| {
@@ -44,7 +63,7 @@ fn get_nearest_pixel_distance(input: &DynamicImage, out_x: u32, out_y: u32, opti
     let is_inside = input.get_pixel(center.0, center.1).to_luma().data[0] > options.image_treshold;
 
     let mut closest_distance = options.max_distance as f32;
-    for (x, y) in ManhattanIterator::new(center.0 as i32, center.1 as i32, options.max_distance as u16) {
+    for (x, y) in ChebyshevIterator::new(center.0 as i32, center.1 as i32, options.max_distance as u16) {
         if x < 0 || y < 0 || x >= orig_size.0 as i32 || y >= orig_size.1 as i32 {
             continue;
         }
