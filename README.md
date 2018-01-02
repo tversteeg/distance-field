@@ -6,7 +6,7 @@ A Rust library/executable for generating distance field bitmaps to render as pse
 
 ### [Documentation](https://docs.rs/distance-field/)
 
-### How to run
+# Generator binary
 
 Checkout the repository and `cd` into it; then run:
 
@@ -20,7 +20,11 @@ And generate a 64x64 distance field:
 
 ![Distance field](img/output.png?raw=true)
 
-Now we can use the generated distance field to create a vector image. First we need to scale it up with a linear interpolation:
+Now we can use the generated distance field to create a vector image.
+
+### Using the distance field
+
+First we need to scale it up with a linear interpolation:
 
 ![Upscaled linear](img/linear.png?raw=true)
 
@@ -29,3 +33,46 @@ Then we apply a treshold function:
 ![Treshold](img/treshold.png?raw=true)
 
 You can see that we have something which looks very similar to the original input image and that just from a 64x64 image! But it's still very pixelated and doesn't look like a vector image. This can be fixed by not doing a hard treshold but allowing some shades of gray.
+
+# Library
+
+An example usecase for the library would be to automatically convert asset images. You can do achieve this by having a `build.rs` similar to this:
+
+```rust
+extern crate image;
+extern crate distance_field;
+
+use std::fs::File;
+use distance_field::DistanceFieldExt;
+
+fn convert_image_to_dfield(input: &str, output: &str) {
+    // Load the 'input' image
+    let img = image::open(input).unwrap();
+
+    // Generate a distance field from the image
+    let outbuf = img.grayscale().distance_field(distance_field::Options {
+        size: (128, 128),
+        max_distance: 256,
+        ..Default::default()
+    });
+
+    // Save it to 'output' as a PNG
+    let ref mut fout = File::create(output).unwrap();
+    image::ImageLuma8(outbuf).save(fout, image::PNG).unwrap();
+}
+
+fn main() {
+    convert_image_to_dfield("img/input.png", "output.png");
+}
+```
+
+And adding the following to `Cargo.toml`:
+
+```toml
+[packages]
+build = "build.rs"
+
+[build-dependencies]
+image = "0.18"
+distance-field = "0.1"
+```
