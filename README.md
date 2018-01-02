@@ -36,7 +36,7 @@ You can see that we have something which looks very similar to the original inpu
 
 # Library
 
-An example usecase for the library would be to automatically convert asset images. You can do achieve this by having a `build.rs` similar to this:
+An example usecase for the library would be to automatically convert asset images. You can achieve this by having a `build.rs` similar to this:
 
 ```rust
 extern crate image;
