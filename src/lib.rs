@@ -4,7 +4,7 @@ extern crate image;
 extern crate spiral;
 
 use image::*;
-use spiral::ChebyshevIterator;
+use spiral::ManhattanIterator;
 
 /// The options passed as the argument to the `distance_field` method.
 pub struct Options {
@@ -63,7 +63,7 @@ fn get_nearest_pixel_distance(input: &DynamicImage, out_x: u32, out_y: u32, opti
     let is_inside = input.get_pixel(center.0, center.1).to_luma().data[0] > options.image_treshold;
 
     let mut closest_distance = options.max_distance as f32;
-    for (x, y) in ChebyshevIterator::new(center.0 as i32, center.1 as i32, options.max_distance as u16) {
+    for (x, y) in ManhattanIterator::new(center.0 as i32, center.1 as i32, options.max_distance as u16) {
         if x < 0 || y < 0 || x >= orig_size.0 as i32 || y >= orig_size.1 as i32 {
             continue;
         }
