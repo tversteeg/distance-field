@@ -25,4 +25,4 @@ name = "generator"
 path = "examples/generator.rs"
 
 [dev-dependencies]
-docopt = "0.8"
+docopt = "1.0"
