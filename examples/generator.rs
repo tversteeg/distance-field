@@ -7,6 +7,7 @@ use std::fs::File;
 use docopt::Docopt;
 use image::GenericImage;
 use distance_field::DistanceFieldExt;
+use image::GenericImageView;
 
 const USAGE: &'static str = "
 Usage:
@@ -38,5 +39,5 @@ fn main() {
     println!("Saving distance field image to {:?}", args.get_str("<dest>"));
     let ref mut fout = File::create(args.get_str("<dest>")).unwrap();
 
-    image::ImageLuma8(outbuf).save(fout, image::PNG).unwrap();
+    image::ImageLuma8(outbuf).save(fout).unwrap();
 }
