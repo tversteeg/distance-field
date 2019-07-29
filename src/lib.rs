@@ -60,7 +60,7 @@ fn get_nearest_pixel_distance(input: &DynamicImage, out_x: u32, out_y: u32, opti
     let center = ((out_x * orig_size.0) / options.size.0, (out_y * orig_size.1) / options.size.1);
 
     // Check if we are inside a filled area so we can get the 127-255 range
-    let is_inside = input.get_pixel(center.0, center.1).to_luma().data[0] > options.image_treshold;
+    let is_inside = input.get_pixel(center.0, center.1).to_luma().0[0] > options.image_treshold;
 
     let mut closest_distance = options.max_distance as f32;
     for (x, y) in ManhattanIterator::new(center.0 as i32, center.1 as i32, options.max_distance as u16) {
@@ -68,7 +68,7 @@ fn get_nearest_pixel_distance(input: &DynamicImage, out_x: u32, out_y: u32, opti
             continue;
         }
 
-        let p = input.get_pixel(x as u32, y as u32).to_luma().data[0];
+        let p = input.get_pixel(x as u32, y as u32).to_luma().0[0];
         // Continue if the center and this pixel are inside the filled area or
         // the pixels are both outside the filled area
         if (p >= options.image_treshold) == is_inside {

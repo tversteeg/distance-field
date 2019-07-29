@@ -2,10 +2,7 @@ extern crate docopt;
 extern crate image;
 extern crate distance_field;
 
-use std::fs::File;
-
 use docopt::Docopt;
-use image::GenericImage;
 use distance_field::DistanceFieldExt;
 use image::GenericImageView;
 
@@ -37,7 +34,5 @@ fn main() {
     });
 
     println!("Saving distance field image to {:?}", args.get_str("<dest>"));
-    let ref mut fout = File::create(args.get_str("<dest>")).unwrap();
-
-    image::ImageLuma8(outbuf).save(fout).unwrap();
+    image::ImageLuma8(outbuf).save(args.get_str("<dest>")).unwrap();
 }
