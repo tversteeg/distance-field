@@ -17,12 +17,12 @@ categories = ["games", "rendering", "game-engines", "multimedia"]
 travis-ci = {repository = "tversteeg/distance-field"}
 
 [dependencies]
-spiral = "0.1"
-image = "0.22"
+spiral = "0.1.9"
+image = "0.22.3"
 
 [[example]]
 name = "generator"
 path = "examples/generator.rs"
 
 [dev-dependencies]
-docopt = "1.0"
+docopt = "1.1.0"

@@ -57,8 +57,7 @@ fn convert_image_to_dfield(input: &str, output: &str) {
     });
 
     // Save it to 'output' as a PNG
-    let ref mut fout = File::create(output).unwrap();
-    image::ImageLuma8(outbuf).save(fout, image::PNG).unwrap();
+    image::ImageLuma8(outbuf).save(output).unwrap();
 }
 
 fn main() {
@@ -73,6 +72,6 @@ And adding the following to `Cargo.toml`:
 build = "build.rs"
 
 [build-dependencies]
-image = "0.18"
 distance-field = "0.1"
+image = "0.22"
 ```
