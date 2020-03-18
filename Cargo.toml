@@ -18,7 +18,7 @@ travis-ci = {repository = "tversteeg/distance-field"}
 
 [dependencies]
 spiral = "0.1.9"
-image = "0.22.3"
+image = "0.23.2"
 
 [[example]]
 name = "generator"
