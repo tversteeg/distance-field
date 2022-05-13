@@ -57,7 +57,7 @@ fn convert_image_to_dfield(input: &str, output: &str) {
     });
 
     // Save it to 'output' as a PNG
-    image::ImageLuma8(outbuf).save(output).unwrap();
+    image::DynamicImage::ImageLuma8(outbuf).save(output).unwrap();
 }
 
 fn main() {
