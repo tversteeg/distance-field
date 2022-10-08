@@ -33,6 +33,7 @@ fn main() {
 
     let outbuf = img.grayscale().distance_field(distance_field::Options {
         max_distance: 256,
+        size: (width, height),
         ..Default::default()
     });
 
