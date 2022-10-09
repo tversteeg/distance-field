@@ -19,7 +19,7 @@ travis-ci = {repository = "tversteeg/distance-field"}
 
 [dependencies]
 spiral = "0.1.9"
-image = "0.24.2"
+image = "0.24.4"
 
 [dev-dependencies]
 pprof = { version = "0.10.1", features = ["flamegraph", "criterion"] }
