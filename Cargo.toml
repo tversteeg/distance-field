@@ -18,7 +18,7 @@ categories = ["games", "rendering", "game-engines", "multimedia"]
 travis-ci = {repository = "tversteeg/distance-field"}
 
 [dependencies]
-spiral = "0.1.9"
+spiral = "0.2.0"
 image = "0.24.4"
 
 [dev-dependencies]
