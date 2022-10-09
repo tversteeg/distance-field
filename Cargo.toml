@@ -4,6 +4,7 @@ version = "0.1.7"
 authors = ["Thomas Versteeg <thomasversteeg@gmx.com>"]
 license = "GPL-3.0"
 homepage = "https://github.com/tversteeg/distance-field"
+edition = "2021"
 
 readme = "README.md"
 description = "Generate distance fields from images for pseudo-vector rendering"
@@ -20,9 +21,15 @@ travis-ci = {repository = "tversteeg/distance-field"}
 spiral = "0.1.9"
 image = "0.24.2"
 
+[dev-dependencies]
+pprof = { version = "0.10.1", features = ["flamegraph", "criterion"] }
+criterion = { version = "0.3.6", default-features = false }
+docopt = "1.1.1"
+
 [[example]]
 name = "generator"
 path = "examples/generator.rs"
 
-[dev-dependencies]
-docopt = "1.1.1"
+[[bench]]
+name = "bench"
+harness = false

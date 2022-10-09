@@ -1,7 +1,3 @@
-extern crate distance_field;
-extern crate docopt;
-extern crate image;
-
 use distance_field::DistanceFieldExt;
 use docopt::Docopt;
 use image::{DynamicImage, GenericImageView};
