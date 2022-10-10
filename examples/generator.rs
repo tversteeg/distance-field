@@ -20,8 +20,8 @@ fn main() {
 
     println!("Loaded image with size {:?}", img.dimensions());
 
-    let width = args.get_str("<width>").parse::<u32>().unwrap();
-    let height = args.get_str("<height>").parse::<u32>().unwrap();
+    let width = args.get_str("<width>").parse::<usize>().unwrap();
+    let height = args.get_str("<height>").parse::<usize>().unwrap();
     println!(
         "Converting image to distance field image with size ({:?}, {:?})...",
         width, height
