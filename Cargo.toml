@@ -23,7 +23,7 @@ image = "0.24.4"
 bitvec = "1.0.1"
 
 [dev-dependencies]
-pprof = { version = "0.10.1", features = ["flamegraph", "criterion"] }
+pprof = { version = "0.11.0", features = ["flamegraph", "criterion"] }
 criterion = { version = "0.4.0", default-features = false }
 docopt = "1.1.1"
 
