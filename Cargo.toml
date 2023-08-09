@@ -19,7 +19,7 @@ travis-ci = {repository = "tversteeg/distance-field"}
 
 [dependencies]
 spiral = "0.2.0"
-image = "0.24.6"
+image = "0.24.7"
 bitvec = "1.0.1"
 
 [dev-dependencies]
