@@ -24,7 +24,7 @@ jobs:
     name: cargo fmt & cargo clippy
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: install rust
         uses: actions-rs/toolchain@v1.0.7
@@ -55,7 +55,7 @@ jobs:
     name: cargo test
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: install rust
         uses: actions-rs/toolchain@v1.0.7
