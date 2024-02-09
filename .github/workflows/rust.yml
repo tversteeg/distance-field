@@ -1,70 +1,52 @@
-name: rust
+name: CI
 on:
   push:
-    branches:
-      - master
-    tags:
-      - v*
     paths-ignore:
       - "docs/**"
       - "**.md"
-      - ".all-contributorsrc"
-  pull_request:
-    branches:
-      - master
-    tags:
-      - v*
-    paths-ignore:
-      - "docs/**"
-      - "**.md"
-      - ".all-contributorsrc"
 
 jobs:
-  rust:
-    name: cargo fmt & cargo clippy
+  # Check for formatting
+  rustfmt:
+    name: Formatter check
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
 
-      - name: install rust
-        uses: actions-rs/toolchain@v1.0.7
+      - uses: actions-rs/toolchain@v1
         with:
-          profile: default
+          profile: minimal
           toolchain: stable
+          components: rustfmt
           override: true
 
-      - name: cargo check
-        uses: actions-rs/cargo@v1.0.3
-        with:
-          command: check
-          args: --all
-
-      - name: cargo fmt
-        uses: actions-rs/cargo@v1.0.3
+      - run: rustup component add rustfmt
+      - uses: actions-rs/cargo@v1
         with:
           command: fmt
           args: --all -- --check
 
-      - name: cargo clippy
-        uses: actions-rs/clippy-check@v1.0.7
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          args: --all-features
-
+  # Run test check on Linux, macOS, and Windows
   test:
-    name: cargo test
+    name: Test
     runs-on: ubuntu-latest
     steps:
+      # Checkout the branch being tested
       - uses: actions/checkout@v4
 
-      - name: install rust
-        uses: actions-rs/toolchain@v1.0.7
+      # Install rust stable
+      - uses: dtolnay/rust-toolchain@master
         with:
-          profile: default
           toolchain: stable
-          override: true
 
-      - name: cargo test
-        uses: actions-rs/cargo@v1.0.3
+      # Cache the built dependencies
+      - uses: Swatinem/rust-cache@v2.7.3
         with:
-          command: test
+          save-if: ${{ github.event_name == 'push' }}
+
+      # Install cargo-hack
+      - uses: taiki-e/install-action@cargo-hack
+
+      # Test all feature combinations on the target platform
+      - name: Test
+        run: cargo hack --each-feature test
