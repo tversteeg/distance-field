@@ -123,27 +123,30 @@ fn get_nearest_pixel_distance(
 ) -> u8 {
     // Calcule the projected center of the output pixel on the source image
     let center = (
-        (out_x * input.width) / options.size.0,
-        (out_y * input.height) / options.size.1,
+        ((out_x * input.width) / options.size.0) as isize,
+        ((out_y * input.height) / options.size.1) as isize,
     );
 
     // Check if we are inside a filled area so we can get the 127-255 range
-    let is_inside = input.get_pixel(center.0, center.1);
+    let is_inside = input.get_pixel(center.0 as usize, center.1 as usize);
 
-    let closest_distance = ManhattanIterator::new(center.0, center.1, options.max_distance)
-        // Ignore the boundary conditions
-        .filter(|(x, y)| *x < input.width && *y < input.height)
-        // Continue if the center and this pixel are inside the filled area or
-        // the pixels are both outside the filled area
-        .find(|(x, y)| input.get_pixel(*x, *y) != is_inside)
-        // We found the nearest pixel, calculate the distance
-        .map(|(x, y)| {
-            let dx = center.0.abs_diff(x);
-            let dy = center.1.abs_diff(y);
+    let closest_distance =
+        ManhattanIterator::new(center.0, center.1, options.max_distance as isize)
+            // Ignore the boundary conditions
+            .filter(|(x, y)| {
+                *x >= 0 && *x < input.width as isize && *y >= 0 && *y < input.height as isize
+            })
+            // Continue if the center and this pixel are inside the filled area or
+            // the pixels are both outside the filled area
+            .find(|(x, y)| input.get_pixel(*x as usize, *y as usize) != is_inside)
+            // We found the nearest pixel, calculate the distance
+            .map(|(x, y)| {
+                let dx = center.0.abs_diff(x);
+                let dy = center.1.abs_diff(y);
 
-            ((dx * dx + dy * dy) as f32).sqrt()
-        })
-        .unwrap_or(options.max_distance as f32);
+                ((dx * dx + dy * dy) as f32).sqrt()
+            })
+            .unwrap_or(options.max_distance as f32);
 
     // Convert the outside to a 0.0-0.5 and the inside to a 0.5-1.0 range
     let distance_fraction = if is_inside {
