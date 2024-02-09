@@ -14,6 +14,8 @@ repository = "https://github.com/tversteeg/distance-field.git"
 keywords = ["image", "SDF", "gamedev", "vector"]
 categories = ["games", "rendering", "game-engines", "multimedia"]
 
+include = ["/src"]
+
 [badges]
 travis-ci = {repository = "tversteeg/distance-field"}
 
